@@ -1,4 +1,4 @@
-class mozes:
+class Mozes:
 
     def __init__(self,cartantype):
         self.cartantype = cartantype

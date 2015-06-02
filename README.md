@@ -20,4 +20,5 @@ sage: sum(len(A.elements[i]) for i in range(6))
 ## References
 
 [Mozes' Paper](http://www.sciencedirect.com/science/article/pii/009731659090024Q)
+
 [Cartan Types in Sage](http://doc.sagemath.org/html/en/reference/combinat/sage/combinat/root_system/cartan_type.html)

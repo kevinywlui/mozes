@@ -1,3 +1,4 @@
+from collections import deque
 class Mozes:
 
     def __init__(self,cartantype):
@@ -6,15 +7,22 @@ class Mozes:
         self.state = [1] * len(self.cartantype.index_set())
         self.identity = [1] * self.n
 
-        # R[i] is list of length i words
-        # run computeR(L) to compute up to R[L]
-        self.R=[[self.identity],[]]
+        # queue is the set of elements that need to be fired upon
+        self.queue=deque([])
+        self.queue.append([self.identity,0])
 
-        # stack is the set of elements that need fired upon
-        self.stack=[[self.identity,0]]
+        # elements[i] is list of length i words
+        # run compute_elements(L) to compute up to elements[L]
+        # compute elements[0],elements[1]
+        self.elements=[[self.identity],[]]
+        element = self.queue.pop()
+        for k in range(self.n):
+            new = self.fire(element[0],k)
+            self.elements[1].append(new)
+            self.queue.appendleft([new,1]) 
 
     def fire(self,state,k):
-        # tranpose to agree with Humphreys
+        # tranpose to agree with Humphreys and the sagemath dynkin diagrams
         v = self.cartantype.cartan_matrix().transpose()[k]
         newstate = list(state)
         for i in range(self.n):
@@ -26,27 +34,23 @@ class Mozes:
         newstate[k] = -state[k]
         return newstate
 
-    def computeR(self,L):
-        while len(self.stack) > 0 and (self.stack[-1][1] <= L or L==-1):
-            element = self.stack.pop()
+    def compute_elements(self,L):
+        while len(self.queue) > 0 and (self.queue[-1][1] <= L or L==-1):
+            element = self.queue.pop()
             l = element[1]
 
-            if l+2 > len(self.R):
-                self.R.append([])
+            if l+2 > len(self.elements):
+                self.elements.append([])
 
             for k in range(self.n):
                 new = self.fire(element[0],k)
-                if element[1] == 0:
-                    self.R[1].append(new)
-                    self.stack.insert(0,[new,1])
-                elif new not in self.R[l-1] and new not in self.R[l+1]:
+                if new not in self.elements[l-1] and new not in self.elements[l+1]:
                     # If w is length l then sw is length l\pm 1
-                    self.R[l+1].append(new)
-                    self.stack.insert(0,[new,l+1])
+                    self.elements[l+1].append(new)
+                    self.queue.appendleft([new,l+1])
                 else:
                     pass #repeated element
 
     def order(self):
-        self.computeR(-1)
-        S=[item for sublist in self.R for item in sublist]
-        return len(S)
+        self.compute_elements(-1)
+        return sum([len(x) for x in self.elements])

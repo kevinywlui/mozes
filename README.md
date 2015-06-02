@@ -9,7 +9,7 @@ sage: A = Mozes(CartanType(['B',4'])); A.order()
 384
 ````
 
-### Compute number of elements after k iterations on iterations
+### Compute number of elements after k iterations on affine type
 
 ````
 sage: A = Mozes(CartanType(['A',2,1])); A.compute_elements(5)
